@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Finelent | Developer Portfolio</title>
+<style>
+  /* ================= БАЗА И ПЕРЕМЕННЫЕ ================= */
+  * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+    font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+  }
+  
+  :root {
+    --bg: #000000; /* Абсолютный черный для максимального контраста */
+    --text-main: #FFFFFF;
+    --text-muted: #A1A1AA; /* Холодный серый */
+    --glass-bg: rgba(20, 20, 25, 0.4); /* Темное стекло */
+    --glass-border: rgba(255, 255, 255, 0.12);
+    --neon-blue: #00F0FF; /* Кислотный циан */
+    --neon-purple: #9D00FF; /* Ядовитый фиолет */
+  }
+
+  body {
+    background-color: var(--bg);
+    color: var(--text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ================= ЕБНУТЫЙ ФОН С НЕОНОМ ================= */
+  .bg-layer {
+    position: fixed;
+    inset: -20%;
+    z-index: -1;
+    pointer-events: none;
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .blob {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.4; /* Уже не бледные, светятся */
+    animation: float 20s infinite alternate;
+  }
+  .blob-1 { width: 70vw; height: 70vw; top: -20%; left: -10%; background: var(--neon-blue); }
+  .blob-2 { width: 60vw; height: 60vw; bottom: -20%; right: -10%; background: var(--neon-purple); animation-delay: -5s; }
+  .blob-3 { width: 40vw; height: 40vw; top: 40%; left: 30%; background: #FFFFFF; opacity: 0.15; animation-delay: -10s; }
+
+  @keyframes float {
+    0% { transform: translate(0, 0) scale(1); }
+    100% { transform: translate(60px, 60px) scale(1.2); }
+  }
+
+  /* ================= ОБЪЕМНОЕ LIQUID GLASS ================= */
+  .glass {
+    background: var(--glass-bg);
+    backdrop-filter: blur(24px) saturate(200%);
+    -webkit-backdrop-filter: blur(24px) saturate(200%);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
+    /* Двойная тень: внешняя черная и внутренняя светлая для объема */
+    box-shadow: 
+      0 30px 60px rgba(0, 0, 0, 0.8),
+      inset 0 1px 0 rgba(255, 255, 255, 0.2),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Блик на стекле */
+  .glass::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 80px 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ================= ПРОФИЛЬ ================= */
+  .hero {
+    text-align: center;
+    margin-bottom: 60px;
+    padding: 60px 40px;
+    animation: slideUp 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) forwards;
+  }
+  
+  /* Аватарка с неоновым свечением */
+  .avatar-container {
+    width: 150px;
+    height: 150px;
+    margin: 0 auto 30px;
+    border-radius: 50%;
+    padding: 3px;
+    background: linear-gradient(135deg, var(--neon-blue), var(--neon-purple));
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.3), 0 0 80px rgba(157, 0, 255, 0.2);
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+  .avatar-container:hover {
+    transform: scale(1.05);
+  }
+  .avatar-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+    filter: grayscale(100%) contrast(1.2); /* Ч/Б для стиля */
+    transition: filter 0.4s ease;
+    background: #000;
+  }
+  .avatar-container:hover img {
+    filter: grayscale(0%) contrast(1.1); /* При наведении цветная */
+  }
+
+  .hero h1 {
+    font-size: 48px;
+    font-weight: 800;
+    margin-bottom: 8px;
+    letter-spacing: -1.5px;
+    background: linear-gradient(to right, #FFFFFF, #A1A1AA);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .hero h2 {
+    font-size: 15px;
+    color: var(--neon-blue);
+    text-transform: uppercase;
+    letter-spacing: 6px;
+    margin-bottom: 24px;
+    font-weight: 700;
+    text-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+  }
+  .hero p {
+    font-size: 18px;
+    color: var(--text-muted);
+    max-width: 650px;
+    margin: 0 auto;
+    font-weight: 400;
+  }
+
+  /* ================= НАВЫКИ ================= */
+  .section-title {
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    margin: 60px 0 25px 5px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+  }
+  .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent);
+    margin-left: 20px;
+  }
+
+  .skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 16px;
+    margin-bottom: 60px;
+  }
+  .skill-item {
+    padding: 20px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 16px;
+    color: #FFF;
+    transition: all 0.3s ease;
+    cursor: default;
+  }
+  .skill-item:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 20px rgba(0, 240, 255, 0.1);
+  }
+  .skill-item span {
+    display: block;
+    font-size: 11px;
+    color: #777;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 500;
+  }
+  .learning { 
+    border-color: rgba(157, 0, 255, 0.5);
+    box-shadow: inset 0 0 20px rgba(157, 0, 255, 0.1);
+  }
+  .learning span { color: var(--neon-purple); text-shadow: 0 0 10px rgba(157, 0, 255, 0.5); }
+
+  /* ================= ПРОЕКТЫ ================= */
+  .project-card {
+    padding: 45px;
+    margin-bottom: 30px;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+  .project-card:hover {
+    transform: translateY(-8px);
+    border-color: rgba(0, 240, 255, 0.4);
+    box-shadow: 
+      0 40px 80px rgba(0, 0, 0, 0.9),
+      0 0 40px rgba(0, 240, 255, 0.15),
+      inset 0 1px 0 rgba(255, 255, 255, 0.3);
+  }
+  .project-header {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    margin-bottom: 30px;
+  }
+  .project-icon {
+    width: 70px;
+    height: 70px;
+    border-radius: 20px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    border: 1px solid #333;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.8), 0 10px 20px rgba(0,0,0,0.5);
+  }
+  .project-card h3 {
+    font-size: 32px;
+    color: #FFF;
+    margin-bottom: 4px;
+    font-weight: 800;
+    letter-spacing: -1px;
+  }
+  .project-tagline {
+    color: var(--neon-blue);
+    font-size: 15px;
+    font-weight: 600;
+    text-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
+  }
+  
+  .project-desc p {
+    color: #D4D4D8; /* Светло-серый для читаемости */
+    margin-bottom: 20px;
+    font-size: 16px;
+    line-height: 1.7;
+  }
+  .project-desc strong { color: #FFF; }
+  
+  .project-desc h4 {
+    color: #FFF;
+    margin: 30px 0 15px;
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid #222;
+    padding-bottom: 8px;
+  }
+  
+  .project-desc ul {
+    list-style: none;
+    padding-left: 0;
+    margin-bottom: 25px;
+  }
+  .project-desc li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+    color: #A1A1AA;
+    font-size: 16px;
+  }
+  .project-desc li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--neon-blue);
+    font-weight: 800;
+    font-family: monospace;
+  }
+
+  .tags {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 30px 0;
+  }
+  .tag {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 6px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #FFF;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    font-weight: 500;
+    transition: all 0.2s;
+  }
+  .tag:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.3);
+  }
+
+  /* ================= ПИЗДАТЫЕ КНОПКИ ================= */
+  .btn-group {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    margin-top: 20px;
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 32px;
+    background: #FFFFFF;
+    color: #000000;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 16px;
+    transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
+    border: 2px solid #FFFFFF;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+  }
+  .btn:hover { 
+    background: #000;
+    color: #FFF;
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.4);
+  }
+  
+  .btn-outline {
+    background: transparent;
+    color: #FFF;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    box-shadow: none;
+  }
+  .btn-outline:hover { 
+    background: rgba(255, 255, 255, 0.05); 
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+  }
+
+  footer {
+    text-align: center;
+    margin-top: 80px;
+    color: #555;
+    font-size: 14px;
+    padding-bottom: 40px;
+    border-top: 1px solid #1A1A1A;
+    padding-top: 40px;
+    font-weight: 500;
+  }
+
+  /* ================= АНИМАЦИИ ================= */
+  @keyframes slideUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ================= ЭФФЕКТ КАПЛИ (Кислотный) ================= */
+  .ripple {
+    position: fixed;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(0, 240, 255, 0.3) 0%, rgba(0, 240, 255, 0) 60%);
+    transform: translate(-50%, -50%) scale(0);
+    animation: rippleAnim 0.8s cubic-bezier(0.2, 0.8, 0.3, 1) forwards;
+    pointer-events: none;
+    z-index: 9999;
+    border: 1px solid rgba(0, 240, 255, 0.6);
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.4);
+  }
+  @keyframes rippleAnim {
+    0% { width: 0; height: 0; opacity: 1; transform: translate(-50%, -50%) scale(0); }
+    100% { width: 600px; height: 600px; opacity: 0; transform: translate(-50%, -50%) scale(1); }
+  }
+
+  /* ================= АДАПТИВНОСТЬ ================= */
+  @media (max-width: 768px) {
+    .container { padding: 40px 15px; }
+    .hero h1 { font-size: 36px; }
+    .hero h2 { font-size: 13px; letter-spacing: 3px; }
+    .hero p { font-size: 16px; }
+    .project-card { padding: 30px 20px; }
+    .project-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+    .project-card h3 { font-size: 26px; }
+    .btn { width: 100%; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Фон с параллаксом -->
+<div class="bg-layer" id="bg-layer">
+  <div class="blob blob-1"></div>
+  <div class="blob blob-2"></div>
+  <div class="blob blob-3"></div>
+</div>
+
+<div class="container">
+  
+  <!-- ПРОФИЛЬ -->
+  <header class="hero glass">
+    <!-- Твоя аватарка -->
+    <div class="avatar-container">
+      <img src="avatar.jpg" alt="Finelent Avatar">
+    </div>
+    <h1>Finelent</h1>
+    <h2>FinelentSource</h2>
+    <p>Привет! Я разработчик, который не боится сложных задач. Специализируюсь на создании мобильных приложений и систем, где важна стабильность и безопасность. Постоянно развиваюсь и изучаю новые технологии.</p>
+  </header>
+
+  <!-- НАВЫКИ -->
+  <div class="section-title">Мои компетенции</div>
+  <div class="skills-grid">
+    <div class="skill-item glass">Java <span>Android Core</span></div>
+    <div class="skill-item glass">C++ <span>System / Logic</span></div>
+    <div class="skill-item glass">JavaScript <span>Web / Integrations</span></div>
+    <div class="skill-item glass">Python <span>Scripts / Automation</span></div>
+    <div class="skill-item glass learning">Rust <span>В процессе</span></div>
+  </div>
+
+  <!-- ПРОЕКТЫ -->
+  <div class="section-title">Избранные проекты</div>
+
+  <!-- Карточка проекта Screen Time -->
+  <article class="project-card glass">
+    <div class="project-header">
+      <div class="project-icon">⏱️</div>
+      <div>
+        <h3>Screen Time</h3>
+        <div class="project-tagline">Умный контроль экранного времени</div>
+      </div>
+    </div>
+    
+    <div class="project-desc">
+      <p><strong>Суть проекта:</strong> Комплексное Android-приложение для борьбы с цифровой зависимостью. Это не просто трекер, а полноценная экосистема для управления цифровым благополучием.</p>
+      
+      <h4>Зачем это нужно?</h4>
+      <p>В современном мире мы проводим слишком много времени в экранах. Screen Time помогает осознанно подходить к использованию гаджетов, ограничивать отвлекающие факторы и дает родителям инструменты для контроля времени ребенка без тотальной слежки.</p>
+      
+      <h4>Ключевой функционал:</h4>
+      <ul>
+        <li><strong>Аналитика:</strong> Точная статистика использования приложений на основе системного API.</li>
+        <li><strong>Блокировка:</strong> Возможность выбора конкретных приложений и ограничения их запуска.</li>
+        <li><strong>Таймер и PIN:</strong> Экран с обратным отсчетом. Разблокировка только по истечении времени или вводу кода.</li>
+        <li><strong>Удаленный контроль:</strong> Интеграция с Firebase для отправки команд на блокировку с другого устройства.</li>
+        <li><strong>OTA-обновления:</strong> Собственная система обновлений "по воздуху".</li>
+        <li><strong>UI/UX:</strong> Строгий дизайн Liquid Glass, отзывчивый параллакс и эффекты при нажатии.</li>
+      </ul>
+
+      <h4>Техническая реализация:</h4>
+      <p>Используются системные компоненты <code>AccessibilityService</code> и <code>SYSTEM_ALERT_WINDOW</code>. Firebase обеспечивает аутентификацию, облачное хранилище и Push-уведомления. Проект требует минимального Android 6.0 и настройки разрешений.</p>
+
+      <div class="tags">
+        <span class="tag">Android SDK</span>
+        <span class="tag">Java</span>
+        <span class="tag">Firebase</span>
+        <span class="tag">Accessibility</span>
+      </div>
+    </div>
+
+    <div class="btn-group">
+      <a href="#" class="btn">Скачать APK</a>
+      <a href="https://github.com/" target="_blank" class="btn btn-outline">Исходный код</a>
+    </div>
+  </article>
+
+  <!-- Карточка следующего проекта -->
+  <article class="project-card glass">
+    <div class="project-header">
+      <div class="project-icon">🦀</div>
+      <div>
+        <h3>Project Rust</h3>
+        <div class="project-tagline">Экспериментальный проект на Rust</div>
+      </div>
+    </div>
+    <div class="project-desc">
+      <p>В настоящее время нахожусь в процессе глубокого изучения языка системного программирования Rust. В планах — создание высокопроизводительного и безопасного инструмента. Проект на стадии проектирования.</p>
+    </div>
+  </article>
+
+  <footer>
+    © 2026 Finelent (FinelentSource). Спроектировано с нуля.
+  </footer>
+
+</div>
+
+<script>
+  // 1. ПАРАЛЛАКС
+  const bgLayer = document.getElementById('bg-layer');
+  document.addEventListener('mousemove', (e) => {
+    const x = (e.clientX / window.innerWidth - 0.5) * 2;
+    const y = (e.clientY / window.innerHeight - 0.5) * 2;
+    bgLayer.style.transform = `translate(${x * -40}px, ${y * -40}px)`;
+  });
+
+  // 2. ЭФФЕКТ КАПЛИ
+  document.addEventListener('click', (e) => {
+    const ripple = document.createElement('div');
+    ripple.className = 'ripple';
+    ripple.style.left = e.clientX + 'px';
+    ripple.style.top = e.clientY + 'px';
+    document.body.appendChild(ripple);
+    setTimeout(() => ripple.remove(), 800);
+  });
+</script>
+</body>
+</html>
